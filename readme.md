@@ -24,8 +24,7 @@
 # 2. 安装更新
 
 ```shell
-go env -w GOPRIVATE=git.xiewo.net
-go get -u "git.xiewo.net/yunwei/jenkinsdk"
+go get -u "github.com/mrlaojia/go-jenkins"
 ```
  
 
