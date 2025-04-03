@@ -124,3 +124,43 @@ func TestJenkinsSdk_UpdateViewDescription(t *testing.T) {
 		t.Logf("update view description success: %v", f)
 	}
 }
+
+func TestJenkinsSdk_AddJobToView(t *testing.T) {
+	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "1109d8a8e0eb5e1818ac293d74db17c43f")
+
+	v := &JenkinsView{
+		Name:   "yunwei",
+		Parent: []string{"dev"},
+	}
+
+	job := &JenkinsJob{
+		Name: "myjob1-2",
+	}
+
+	err := j.AddJobToView(v, job)
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Logf("add job to view success: %v", v)
+	}
+}
+
+func TestJenkinsSdk_RemoveJobFromView(t *testing.T) {
+	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "1109d8a8e0eb5e1818ac293d74db17c43f")
+
+	v := &JenkinsView{
+		Name:   "yunwei",
+		Parent: []string{"dev"},
+	}
+
+	job := &JenkinsJob{
+		Name: "myjob1-2",
+	}
+
+	err := j.RemoveJobFromView(v, job)
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Logf("remove job from view success: %v", v)
+	}
+}

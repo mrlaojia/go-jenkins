@@ -26,9 +26,9 @@ type JenkinsFolder struct {
 	Parent      []string
 }
 
-// getParentPath 构建 Jenkins job 路径
+// GetParentPath 构建 Jenkins job 路径
 // []string{"a", "b"} → /job/a/job/b
-func (f *JenkinsFolder) getParentPath() string {
+func (f *JenkinsFolder) GetParentPath() string {
 	var builder strings.Builder
 	for _, elem := range f.Parent {
 		builder.WriteString("/job/")
@@ -37,8 +37,8 @@ func (f *JenkinsFolder) getParentPath() string {
 	return builder.String()
 }
 
-func (f *JenkinsFolder) getFullPath() string {
-	return f.getParentPath() + "/job/" + f.Name
+func (f *JenkinsFolder) GetFullPath() string {
+	return f.GetParentPath() + "/job/" + f.Name
 }
 
 // JenkinsFolderTemplate 生成的 template
@@ -80,7 +80,7 @@ func (j *JenkinsSdk) makeFolderConfig(f *JenkinsFolder) (string, error) {
 func (j *JenkinsSdk) CreateFolder(f *JenkinsFolder) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/createItem?name=%s", j.Url, f.getParentPath(), url.QueryEscape(f.Name))
+	api := fmt.Sprintf("%s%v/createItem?name=%s", j.Url, f.GetParentPath(), url.QueryEscape(f.Name))
 	//fmt.Println(api)
 
 	// getConfig
@@ -111,7 +111,7 @@ func (j *JenkinsSdk) CreateFolder(f *JenkinsFolder) error {
 func (j *JenkinsSdk) DeleteFolder(f *JenkinsFolder) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/", j.Url, f.getFullPath())
+	api := fmt.Sprintf("%s%v/", j.Url, f.GetFullPath())
 
 	// getConfig
 	//configXml, err := j.makeFolderConfig(f)
@@ -138,7 +138,7 @@ func (j *JenkinsSdk) DeleteFolder(f *JenkinsFolder) error {
 func (j *JenkinsSdk) GetFolder(f *JenkinsFolder) ([]byte, error) {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/config.xml", j.Url, f.getFullPath())
+	api := fmt.Sprintf("%s%v/config.xml", j.Url, f.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("GET", api, nil)
@@ -159,7 +159,7 @@ func (j *JenkinsSdk) GetFolder(f *JenkinsFolder) ([]byte, error) {
 // form 字段中 json 的值会被应用
 func (j *JenkinsSdk) UpdateFolderDescription(f *JenkinsFolder, description string) error {
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/configSubmit", j.Url, f.getFullPath())
+	api := fmt.Sprintf("%s%v/configSubmit", j.Url, f.GetFullPath())
 
 	// 创建表单数据
 	data := url.Values{}
@@ -193,7 +193,7 @@ func (j *JenkinsSdk) UpdateFolderDescription(f *JenkinsFolder, description strin
 func (j *JenkinsSdk) UpdateFolder(f *JenkinsFolder, configXml []byte) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/config.xml", j.Url, f.getFullPath())
+	api := fmt.Sprintf("%s%v/config.xml", j.Url, f.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("POST", api, bytes.NewBuffer(configXml))

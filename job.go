@@ -23,9 +23,9 @@ type JenkinsJob struct {
 	Parent    []string
 }
 
-// getParentPath 构建 Jenkins job 路径
+// GetParentPath 构建 Jenkins job 路径
 // []string{"a", "b"} → /job/a/job/b
-func (f *JenkinsJob) getParentPath() string {
+func (f *JenkinsJob) GetParentPath() string {
 	var builder strings.Builder
 	for _, elem := range f.Parent {
 		builder.WriteString("/job/")
@@ -34,8 +34,8 @@ func (f *JenkinsJob) getParentPath() string {
 	return builder.String()
 }
 
-func (f *JenkinsJob) getFullPath() string {
-	return f.getParentPath() + "/job/" + f.Name
+func (f *JenkinsJob) GetFullPath() string {
+	return f.GetParentPath() + "/job/" + f.Name
 }
 
 // CreateJob 创建 job
@@ -43,7 +43,7 @@ func (f *JenkinsJob) getFullPath() string {
 func (j *JenkinsSdk) CreateJob(job *JenkinsJob) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/createItem?name=%s", j.Url, job.getParentPath(), url.QueryEscape(job.Name))
+	api := fmt.Sprintf("%s%v/createItem?name=%s", j.Url, job.GetParentPath(), url.QueryEscape(job.Name))
 	//fmt.Println(api)
 
 	// 创建 HTTP 请求
@@ -75,7 +75,7 @@ func (j *JenkinsSdk) CopyJob(job, from *JenkinsJob) error {
 	fmt.Println(from.Parent, from.Name, fromList)
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/createItem?name=%s&mode=copy&from=%v", j.Url, job.getParentPath(), url.QueryEscape(job.Name), url.QueryEscape(fromPath))
+	api := fmt.Sprintf("%s%v/createItem?name=%s&mode=copy&from=%v", j.Url, job.GetParentPath(), url.QueryEscape(job.Name), url.QueryEscape(fromPath))
 	//fmt.Println(api)
 
 	// 创建 HTTP 请求
@@ -98,7 +98,7 @@ func (j *JenkinsSdk) CopyJob(job, from *JenkinsJob) error {
 func (j *JenkinsSdk) EnableJob(job *JenkinsJob) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/enable", j.Url, job.getFullPath())
+	api := fmt.Sprintf("%s%v/enable", j.Url, job.GetFullPath())
 	//fmt.Println(api)
 
 	// 创建 HTTP 请求
@@ -121,7 +121,7 @@ func (j *JenkinsSdk) EnableJob(job *JenkinsJob) error {
 func (j *JenkinsSdk) DisableJob(job *JenkinsJob) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/disable", j.Url, job.getFullPath())
+	api := fmt.Sprintf("%s%v/disable", j.Url, job.GetFullPath())
 	//fmt.Println(api)
 
 	// 创建 HTTP 请求
@@ -143,7 +143,7 @@ func (j *JenkinsSdk) DisableJob(job *JenkinsJob) error {
 func (j *JenkinsSdk) DeleteJob(job *JenkinsJob) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/", j.Url, job.getFullPath())
+	api := fmt.Sprintf("%s%v/", j.Url, job.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("DELETE", api, nil)
@@ -164,7 +164,7 @@ func (j *JenkinsSdk) DeleteJob(job *JenkinsJob) error {
 func (j *JenkinsSdk) GetJob(v *JenkinsJob) ([]byte, error) {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/config.xml", j.Url, v.getFullPath())
+	api := fmt.Sprintf("%s%v/config.xml", j.Url, v.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("GET", api, nil)
@@ -186,7 +186,7 @@ func (j *JenkinsSdk) GetJob(v *JenkinsJob) ([]byte, error) {
 func (j *JenkinsSdk) UpdateJobDescription(job *JenkinsJob, desc string) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/description", j.Url, job.getFullPath())
+	api := fmt.Sprintf("%s%v/description", j.Url, job.GetFullPath())
 
 	formData := url.Values{}
 	formData.Set("description", desc)
@@ -215,7 +215,7 @@ func (j *JenkinsSdk) UpdateJobDescription(job *JenkinsJob, desc string) error {
 func (j *JenkinsSdk) UpdateJob(job *JenkinsJob) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/config.xml", j.Url, job.getFullPath())
+	api := fmt.Sprintf("%s%v/config.xml", j.Url, job.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("POST", api, bytes.NewBufferString(job.ConfigXml))

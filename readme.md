@@ -4,7 +4,7 @@
 对 Jenkins [Remote Access API](https://www.jenkins.io/doc/book/using/remote-access-api/) 的简单封装。
 
 * **jenkins**: 获取jenkins信息(测活)
-* **view**: 创建，删除，获取配置，更改description，更改配置
+* **view**: 创建，删除，获取配置，更改description，更改配置，将job添加到view，将job从view移除
 * **folder**: 创建，删除，获取配置，更改description，更改配置
 * **job**: 创建(config)，复制job，删除，获取配置，启用，禁用，更改description，更改配置
 * **csrf**: 获取csrf，设置csrf
@@ -24,7 +24,8 @@
 # 2. 安装更新
 
 ```shell
-go get -u "github.com/mrlaojia/go-jenkins"
+go env -w GOPRIVATE=git.xiewo.net
+go get -u "git.xiewo.net/yunwei/jenkinsdk"
 ```
  
 

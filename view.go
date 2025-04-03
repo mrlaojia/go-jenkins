@@ -24,9 +24,9 @@ type JenkinsView struct {
 	Parent      []string
 }
 
-// getParentPath 构建 ParentPath 路径
+// GetParentPath 构建 ParentPath 路径
 // []string{"a", "b"} → /job/a/job/b
-func (v *JenkinsView) getParentPath() string {
+func (v *JenkinsView) GetParentPath() string {
 	var builder strings.Builder
 	for _, elem := range v.Parent {
 		builder.WriteString("/job/")
@@ -35,8 +35,8 @@ func (v *JenkinsView) getParentPath() string {
 	return builder.String()
 }
 
-func (f *JenkinsView) getFullPath() string {
-	return f.getParentPath() + "/view/" + f.Name
+func (f *JenkinsView) GetFullPath() string {
+	return f.GetParentPath() + "/view/" + f.Name
 }
 
 type JenkinsListViewTemplate struct {
@@ -69,7 +69,7 @@ func (j *JenkinsSdk) makeListViewConfig(v *JenkinsView) (string, error) {
 func (j *JenkinsSdk) CreateListView(v *JenkinsView) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/createView?name=%s", j.Url, v.getParentPath(), url.QueryEscape(v.Name))
+	api := fmt.Sprintf("%s%v/createView?name=%s", j.Url, v.GetParentPath(), url.QueryEscape(v.Name))
 	//fmt.Println(api)
 
 	// getConfig
@@ -98,7 +98,7 @@ func (j *JenkinsSdk) CreateListView(v *JenkinsView) error {
 func (j *JenkinsSdk) DeleteView(v *JenkinsView) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/doDelete", j.Url, v.getFullPath())
+	api := fmt.Sprintf("%s%v/doDelete", j.Url, v.GetFullPath())
 	//fmt.Println(api)
 
 	// 创建 HTTP 请求
@@ -120,7 +120,7 @@ func (j *JenkinsSdk) DeleteView(v *JenkinsView) error {
 func (j *JenkinsSdk) GetView(v *JenkinsView) ([]byte, error) {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/config.xml", j.Url, v.getFullPath())
+	api := fmt.Sprintf("%s%v/config.xml", j.Url, v.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("GET", api, nil)
@@ -141,7 +141,7 @@ func (j *JenkinsSdk) GetView(v *JenkinsView) ([]byte, error) {
 // http://172.19.89.76:48080/view/view123/ 右上边有单独的 Edit description
 func (j *JenkinsSdk) UpdateViewDescription(v *JenkinsView, description string) error {
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/submitDescription", j.Url, v.getFullPath())
+	api := fmt.Sprintf("%s%v/submitDescription", j.Url, v.GetFullPath())
 
 	// 创建表单数据
 	data := url.Values{}
@@ -173,7 +173,7 @@ func (j *JenkinsSdk) UpdateViewDescription(v *JenkinsView, description string) e
 func (j *JenkinsSdk) UpdateView(v *JenkinsView, configXml []byte) error {
 
 	// 创建请求 URL
-	api := fmt.Sprintf("%s%v/config.xml", j.Url, v.getFullPath())
+	api := fmt.Sprintf("%s%v/config.xml", j.Url, v.GetFullPath())
 
 	// 创建 HTTP 请求
 	req, err := http.NewRequest("POST", api, bytes.NewBuffer(configXml))
@@ -184,6 +184,49 @@ func (j *JenkinsSdk) UpdateView(v *JenkinsView, configXml []byte) error {
 	_, err = j.sendHttp(req)
 	if err != nil {
 		return errors.New("update view error: " + err.Error())
+	}
+
+	return nil
+}
+
+// AddJobToView 将 job 添加到 view
+// 可以重复添加
+// api: http://172.19.89.76:48080/view/view123/api/
+func (j *JenkinsSdk) AddJobToView(v *JenkinsView, job *JenkinsJob) error {
+
+	// 创建请求 URL
+	api := fmt.Sprintf("%s%v/addJobToView?name=%s", j.Url, v.GetFullPath(), url.QueryEscape(job.Name))
+
+	// 创建 HTTP 请求
+	req, err := http.NewRequest("POST", api, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = j.sendHttp(req)
+	if err != nil {
+		return errors.New("add job to view error: " + err.Error())
+	}
+
+	return nil
+}
+
+// RemoveJobFromView 将 job 从 view 移除
+// api: http://172.19.89.76:48080/view/view123/api/
+func (j *JenkinsSdk) RemoveJobFromView(v *JenkinsView, job *JenkinsJob) error {
+
+	// 创建请求 URL
+	api := fmt.Sprintf("%s%v/removeJobFromView?name=%s", j.Url, v.GetFullPath(), url.QueryEscape(job.Name))
+
+	// 创建 HTTP 请求
+	req, err := http.NewRequest("POST", api, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = j.sendHttp(req)
+	if err != nil {
+		return errors.New("remove job from view error: " + err.Error())
 	}
 
 	return nil
