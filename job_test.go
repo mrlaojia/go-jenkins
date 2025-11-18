@@ -35,14 +35,19 @@ const (
         </project>`
 )
 
-func TestJenkinsSdk_CreateJob(t *testing.T) {
-	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "11900ac516d0ac841dfcdab7ed042b9fcb")
+const (
+	testJenkinsUrl = "http://10.9.0.37:48080/"
+)
 
+func TestJenkinsSdk_CreateJob(t *testing.T) {
+	j := NewJenkinsSdk(testJenkinsUrl, "wkj", "110625b852e17d32b31137c4370476d484")
+	
 	job := &JenkinsJob{
 		Name:      "job-create_2",
+		Parent:    []string{"test"},
 		ConfigXml: jobConfig,
 	}
-
+	
 	err := j.CreateJob(job)
 	if err != nil {
 		t.Error(err)
@@ -51,32 +56,49 @@ func TestJenkinsSdk_CreateJob(t *testing.T) {
 	}
 }
 
+func TestJenkinsSdk_RenameJob(t *testing.T) {
+	j := NewJenkinsSdk(testJenkinsUrl, "wkj", "110625b852e17d32b31137c4370476d484")
+	
+	job := &JenkinsJob{
+		Name:      "job-create_2",
+		Parent:    []string{"test"},
+		ConfigXml: jobConfig,
+	}
+	
+	err := j.RenameJob(job, "laojia_2")
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Logf("rename job success")
+	}
+}
+
 func TestJenkinsSdk_CopyJob(t *testing.T) {
 	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "11900ac516d0ac841dfcdab7ed042b9fcb")
-
+	
 	fromJob := &JenkinsJob{
 		Name: "job-create_2",
 		//Parent: []string{"dev1"},
 	}
-
+	
 	job := &JenkinsJob{
 		Name: "job-copy_5",
 	}
-
+	
 	err := j.CopyJob(job, fromJob)
 	if err != nil {
 		t.Error(err)
 	} else {
 		t.Logf("copy job success")
 	}
-
+	
 	err = j.DisableJob(job)
 	if err != nil {
 		t.Error(err)
 	} else {
 		t.Logf("disable job success")
 	}
-
+	
 	err = j.EnableJob(job)
 	if err != nil {
 		t.Error(err)
@@ -87,11 +109,11 @@ func TestJenkinsSdk_CopyJob(t *testing.T) {
 
 func TestJenkinsSdk_GetJob(t *testing.T) {
 	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "11900ac516d0ac841dfcdab7ed042b9fcb")
-
+	
 	job := &JenkinsJob{
 		Name: "job-copy_1",
 	}
-
+	
 	config, err := j.GetJob(job)
 	if err != nil {
 		t.Error(err)
@@ -102,12 +124,12 @@ func TestJenkinsSdk_GetJob(t *testing.T) {
 
 func TestJenkinsSdk_DeleteJob(t *testing.T) {
 	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "11900ac516d0ac841dfcdab7ed042b9fcb")
-
+	
 	job := &JenkinsJob{
 		Name:   "dev_job-1",
 		Parent: []string{"dev1"},
 	}
-
+	
 	err := j.DeleteJob(job)
 	if err != nil {
 		t.Error(err)
@@ -118,28 +140,28 @@ func TestJenkinsSdk_DeleteJob(t *testing.T) {
 
 func TestJenkinsSdk_UpdateJobDescription(t *testing.T) {
 	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "11900ac516d0ac841dfcdab7ed042b9fcb")
-
+	
 	job := &JenkinsJob{
 		Name: "job-copy_2",
 	}
-
+	
 	err := j.UpdateJobDescription(job, "i am new-s job description")
 	if err != nil {
 		t.Error(err)
 	} else {
 		t.Logf("update job description success")
 	}
-
+	
 }
 
 func TestJenkinsSdk_UpdateJob(t *testing.T) {
 	j := NewJenkinsSdk("http://172.19.89.76:48080/", "wkj", "11900ac516d0ac841dfcdab7ed042b9fcb")
-
+	
 	job := &JenkinsJob{
 		Name:      "job-copy_5",
 		ConfigXml: jobConfig,
 	}
-
+	
 	err := j.UpdateJob(job)
 	if err != nil {
 		t.Error(err)
